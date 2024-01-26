@@ -70,6 +70,8 @@ type Reconcilers struct {
 	TinkerbellDatacenterReconciler     *TinkerbellDatacenterReconciler
 	CloudStackDatacenterReconciler     *CloudStackDatacenterReconciler
 	NutanixDatacenterReconciler        *NutanixDatacenterReconciler
+	KubeadmControlPlaneReconciler      *KubeadmControlPlaneReconciler
+	MachineDeploymentReconciler        *MachineDeploymentReconciler
 	ControlPlaneUpgradeReconciler      *ControlPlaneUpgradeReconciler
 	MachineDeploymentUpgradeReconciler *MachineDeploymentUpgradeReconciler
 	NodeUpgradeReconciler              *NodeUpgradeReconciler
@@ -582,6 +584,40 @@ func (f *Factory) withMachineHealthCheckReconciler() *Factory {
 		f.machineHealthCheckReconciler = mhcreconciler.New(
 			f.manager.GetClient(),
 			machineHealthCheckDefaulter,
+		)
+
+		return nil
+	})
+
+	return f
+}
+
+// WithKubeadmControlPlaneReconciler builds the KubeadmControlPlane reconciler.
+func (f *Factory) WithKubeadmControlPlaneReconciler() *Factory {
+	f.buildSteps = append(f.buildSteps, func(ctx context.Context) error {
+		if f.reconcilers.KubeadmControlPlaneReconciler != nil {
+			return nil
+		}
+
+		f.reconcilers.KubeadmControlPlaneReconciler = NewKubeadmControlPlaneReconciler(
+			f.manager.GetClient(),
+		)
+
+		return nil
+	})
+
+	return f
+}
+
+// WithMachineDeploymentReconciler builds the MachineDeployment reconciler.
+func (f *Factory) WithMachineDeploymentReconciler() *Factory {
+	f.buildSteps = append(f.buildSteps, func(ctx context.Context) error {
+		if f.reconcilers.MachineDeploymentReconciler != nil {
+			return nil
+		}
+
+		f.reconcilers.MachineDeploymentReconciler = NewMachineDeploymentReconciler(
+			f.manager.GetClient(),
 		)
 
 		return nil

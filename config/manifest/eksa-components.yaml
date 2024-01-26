@@ -7130,6 +7130,22 @@ rules:
 - apiGroups:
   - cluster.x-k8s.io
   resources:
+  - machinedeployment
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cluster.x-k8s.io
+  resources:
+  - machinedeployment/status
+  verbs:
+  - get
+- apiGroups:
+  - cluster.x-k8s.io
+  resources:
   - machinedeployments
   verbs:
   - create
@@ -7167,6 +7183,22 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - controlplane.cluster.x-k8s.io
+  resources:
+  - kubeadmcontrolplane
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - controlplane.cluster.x-k8s.io
+  resources:
+  - kubeadmcontrolplane/status
+  verbs:
+  - get
 - apiGroups:
   - controlplane.cluster.x-k8s.io
   resources:

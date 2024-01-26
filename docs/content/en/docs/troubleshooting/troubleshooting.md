@@ -155,9 +155,9 @@ Either use a different cluster name or move the directory.
 ```
 Error: the cluster config file provided is invalid: at least one WorkerNodeGroupConfiguration must not have NoExecute and/or NoSchedule taints
 ```
-At least one schedulable worker node group is required to run cluster administration components. Both `NoExecute` and `NoSchedule` taints must be absent from the workerNodeGroup for it to be considered schedulable.
+An EKS Anywhere management cluster requires at least one schedulable worker node group to run cluster administration components. Both `NoExecute` and `NoSchedule` taints must be absent from the workerNodeGroup for it to be considered schedulable. This validation was removed for workload clusters from v0.19.0 onwards, so now it only applies to management clusters.
 
-To remedy, remove `NoExecute` and `NoSchedule` taints from at least one WorkerNodeGroupConfiguration.
+To remedy, remove `NoExecute` and `NoSchedule` taints from at least one WorkerNodeGroupConfiguration on your management cluster.
 
 Invalid configuration example:
 ```
@@ -499,6 +499,49 @@ To fix it, make sure to validate the network/firewall settings from the workload
 * [Requirements for EKS Anywhere on CloudStack]({{< relref "../getting-started/cloudstack/cloudstack-prereq" >}})
 * [Prerequisite Checklist for EKS Anywhere on Snow]({{< relref "../getting-started/snow/snow-getstarted/#prerequisite-checklist" >}})
 * [Requirements for EKS Anywhere on Nutanix Cloud Infrastructure]({{< relref "../getting-started/nutanix/nutanix-prereq" >}})
+
+### Labeling nodes with reserved labels such as `node-role.kubernetes.io` fails with kubeadm error during bootstrap
+
+If cluster creation or upgrade fails to complete successfully and kubelet throws an error similar to the one below, please refer to this section. The cluster spec for EKS Anywhere create or upgrade should look like:
+
+```
+.
+.
+   controlPlaneConfiguration:        
+      count: 2                       
+      endpoint:                      
+         host: "192.168.x.x"
+      labels:                        
+        "node-role.kubernetes.io/control-plane": "cp"
+   workerNodeGroupConfigurations: 
+   - count: 2 
+     labels:                        
+        "node-role.kubernetes.io/worker": "worker"
+.
+.
+```
+
+If your cluster spec looks like the above one for either the control plane configuration and/or worker node configuration, you might run into the below kubelet error:
+```
+unknown 'kubernetes.io' or 'k8s.io' labels specified with --node-labels: [node-role.kubernetes.io/worker].
+--node-labels in the 'kubernetes.io' namespace must begin with an allowed prefix (kubelet.kubernetes.io, node.kubernetes.io) or be in the specifically allowed set (beta.kubernetes.io/arch, beta.kubernetes.io/instance-type, beta.kubernetes.io/os, failure-domain.beta.kubernetes.io/region, failure-domain.beta.kubernetes.io/zone, kubernetes.io/arch, kubernetes.io/hostname, kubernetes.io/os, node.kubernetes.io/instance-type, topology.kubernetes.io/region, topology.kubernetes.io/zone)
+```
+Self-assigning node labels such as `node-role.kubernetes.io` using the kubelet `--node-labels` flag is not possible due to a security measure imposed by the NodeRestriction admission controller that kubeadm enables by default.
+
+Assigning such labels to nodes can be done after the bootstrap process has completed:
+
+```
+kubectl label nodes <name> node-role.kubernetes.io/worker=""
+```
+For convenience, here are example one-liners to do this post-installation:
+
+```
+# For Kubernetes 1.19 (kubeadm 1.19 sets only the node-role.kubernetes.io/master label)
+kubectl get nodes --no-headers -l '!node-role.kubernetes.io/master' -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | xargs -I{} kubectl label node {} node-role.kubernetes.io/worker=''
+
+# For Kubernetes >= 1.20 (kubeadm >= 1.20 sets the node-role.kubernetes.io/control-plane label)
+kubectl get nodes --no-headers -l '!node-role.kubernetes.io/control-plane' -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | xargs -I{} kubectl label node {} node-role.kubernetes.io/worker=''
+```
 
 ## Bare Metal troubleshooting
 
