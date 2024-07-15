@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.15.3
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.167.1
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.27.4
-	github.com/aws/eks-anywhere-packages v0.3.9
+	github.com/aws/eks-anywhere-packages v0.4.3
 	github.com/aws/eks-anywhere/internal/aws-sdk-go-v2/service/snowballdevice v0.0.0-00010101000000-000000000000
 	github.com/aws/eks-distro-build-tooling/release v0.0.0-20211103003257-a7e2379eae5e
 	github.com/aws/etcdadm-bootstrap-provider v1.0.12
@@ -67,6 +67,8 @@ require (
 	sigs.k8s.io/controller-runtime v0.16.5
 	sigs.k8s.io/yaml v1.4.0
 )
+
+require go.uber.org/goleak v1.3.0 // indirect
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
