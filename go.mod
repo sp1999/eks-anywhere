@@ -1,6 +1,7 @@
 module github.com/aws/eks-anywhere
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
@@ -29,8 +30,8 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-github/v35 v35.3.0
 	github.com/google/uuid v1.6.0
-	github.com/nutanix-cloud-native/cluster-api-provider-nutanix v1.3.2
-	github.com/nutanix-cloud-native/prism-go-client v0.3.4
+	github.com/nutanix-cloud-native/cluster-api-provider-nutanix v1.3.5
+	github.com/nutanix-cloud-native/prism-go-client v0.4.0
 	github.com/onsi/gomega v1.30.0
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/pkg/errors v0.9.1
@@ -57,7 +58,7 @@ require (
 	k8s.io/client-go v0.29.5
 	k8s.io/component-base v0.29.5
 	k8s.io/klog/v2 v2.110.1
-	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
+	k8s.io/utils v0.0.0-20240310230437-4693a0247e57
 	oras.land/oras-go v1.2.5
 	oras.land/oras-go/v2 v2.4.0
 	sigs.k8s.io/cluster-api v1.6.2
